@@ -3,7 +3,7 @@
 A retro, arcade-inspired interactive web application combining classic OS window chrome with a real-time sentiment engine. Users can write secret entries inside an old-school interface, watch their letters fold into a 3D envelope, and unlock custom audio-visual feedback.
 
 Live Interactive Demo
-https://sathvikachandramohan.github.io/secret-message-simulator/
+
 
 ---
 
