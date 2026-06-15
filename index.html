@@ -1,300 +1,1009 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secret Message Simulator 💌</title>
-  <link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)"/>
-  <link rel="preconnect" href="[fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin/>
-  <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap)" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Gachapon Mailer</title>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Fredoka:wght@400;600&display=swap)" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #f5f0e6;
+            --pink: #f4b8c5;
+            --teal: #7ec8c8;
+            --coral: #e07060;
+            --red: #d64545;
+            --gold: #f0d060;
+            --dark: #3d3d3d;
+            --light-pink: #fde8ec;
+            --light-teal: #d4f0f0;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--cream);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(244, 184, 197, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(126, 200, 200, 0.15) 0%, transparent 50%);
+            font-family: 'Patrick Hand', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* SVG Filter for Sketchy Effect */
+        .sketchy-filter {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .sketchy {
+            filter: url(#sketchy);
+        }
+
+        /* Main Container */
+        .gachapon-container {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Top Header */
+        .machine-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .gacha-label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 14px;
+            color: var(--red);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .secret-title {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 42px;
+            color: var(--dark);
+            position: relative;
+        }
+
+        .secret-title::after {
+            content: '✧';
+            position: absolute;
+            right: -25px;
+            top: 5px;
+            font-size: 20px;
+            color: var(--pink);
+        }
+
+        /* Machine Body */
+        .machine {
+            position: relative;
+            width: 320px;
+            background: linear-gradient(180deg, var(--light-pink) 0%, #fff 50%, var(--light-pink) 100%);
+            border: 4px solid var(--dark);
+            border-radius: 20px 20px 15px 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .machine:hover {
+            transform: scale(1.01);
+        }
+
+        .machine:active {
+            transform: scale(0.99);
+        }
+
+        /* Glass Globe */
+        .glass-globe {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,248,255,0.7) 100%);
+            border: 3px solid var(--dark);
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-end;
+            padding: 10px;
+            gap: 5px;
+        }
+
+        .glass-globe::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 40px;
+            height: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        /* Capsules in Globe */
+        .capsule {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .capsule::before {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--dark);
+        }
+
+        .capsule::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            width: 8px;
+            height: 6px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+        }
+
+        .capsule.pink { background: linear-gradient(180deg, var(--pink) 50%, #fff 50%); }
+        .capsule.teal { background: linear-gradient(180deg, var(--teal) 50%, #fff 50%); }
+        .capsule.gold { background: linear-gradient(180deg, var(--gold) 50%, #fff 50%); }
+        .capsule.coral { background: linear-gradient(180deg, var(--coral) 50%, #fff 50%); }
+
+        /* Signboard */
+        .signboard {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fffef5;
+            border: 3px solid var(--dark);
+            border-radius: 8px;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 3px 3px 0 var(--dark);
+            z-index: 10;
+        }
+
+        .signboard-text {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .price-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: var(--gold);
+            border: 2px solid var(--dark);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--dark);
+            transform: rotate(15deg);
+        }
+
+        /* Control Console */
+        .control-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px;
+            background: linear-gradient(180deg, #fff 0%, var(--light-teal) 100%);
+            border: 3px solid var(--dark);
+            border-radius: 10px;
+        }
+
+        /* Coin Slot */
+        .coin-slot-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .coin-slot {
+            width: 35px;
+            height: 8px;
+            background: var(--dark);
+            border-radius: 4px;
+            border: 2px solid var(--dark);
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--dark);
+            background: #fff;
+            padding: 2px 8px;
+            border: 2px solid var(--dark);
+            border-radius: 4px;
+        }
+
+        /* Crank Handle */
+        .crank-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .crank-base {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff 0%, var(--light-teal) 100%);
+            border: 3px solid var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .crank-handle {
+            width: 50px;
+            height: 50px;
+            background: var(--teal);
+            border: 3px solid var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .crank-handle.spinning {
+            animation: spin 0.6s ease-out;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .crank-handle.pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .arrow-icon {
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        /* Return Button */
+        .return-btn {
+            width: 30px;
+            height: 30px;
+            background: var(--coral);
+            border: 2px solid var(--dark);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Dispenser Slot */
+        .dispenser-area {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+
+        .dispenser-slot {
+            width: 70px;
+            height: 50px;
+            background: var(--dark);
+            border: 3px solid var(--dark);
+            border-radius: 0 0 15px 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dispenser-slot::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+
+        /* Dropped Capsule */
+        .dropped-capsule {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(-200px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 20;
+        }
+
+        .dropped-capsule.dropped {
+            opacity: 1;
+            transform: translateY(0);
+            animation: bounce 0.5s ease-out 0.5s;
+        }
+
+        .dropped-capsule::before {
+            content: '';
+            position: absolute;
+            top: 45%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--dark);
+        }
+
+        .dropped-capsule::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 10px;
+            width: 10px;
+            height: 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .dropped-capsule:hover {
+            transform: scale(1.1);
+        }
+
+        /* Machine Legs */
+        .machine-legs {
+            display: flex;
+            justify-content: space-between;
+            width: 280px;
+            margin-top: -5px;
+        }
+
+        .leg {
+            width: 40px;
+            height: 30px;
+            background: var(--coral);
+            border: 3px solid var(--dark);
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Message Overlay */
+        .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .message-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Opening Capsule Animation */
+        .opening-capsule {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .opening-capsule.active {
+            opacity: 1;
+            transform: scale(1);
+            animation: capsuleSpin 0.8s ease-out;
+        }
+
+        @keyframes capsuleSpin {
+            0% { transform: scale(0) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(360deg); }
+            100% { transform: scale(1) rotate(720deg); }
+        }
+
+        .capsule-half {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            border: 4px solid var(--dark);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .capsule-top {
+            top: 0;
+            border-radius: 60px 60px 0 0;
+            border-bottom: none;
+        }
+
+        .capsule-bottom {
+            bottom: 0;
+            border-radius: 0 0 60px 60px;
+            border-top: none;
+            background: #fff;
+        }
+
+        .opening-capsule.opened .capsule-top {
+            transform: translateY(-40px) rotate(-20deg);
+        }
+
+        .opening-capsule.opened .capsule-bottom {
+            transform: translateY(40px) rotate(10deg);
+        }
+
+        /* Letter */
+        .letter-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 280px;
+            max-width: 90vw;
+            background: #fffef8;
+            background-image: 
+                linear-gradient(#d4e5f7 1px, transparent 1px);
+            background-size: 100% 28px;
+            border: 3px solid var(--dark);
+            border-radius: 5px;
+            padding: 25px;
+            box-shadow: 5px 5px 0 var(--dark);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+            z-index: 110;
+        }
+
+        .letter-container.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .letter-decorations {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .washi-tape {
+            width: 60px;
+            height: 25px;
+            background: var(--pink);
+            opacity: 0.8;
+            transform: rotate(-3deg);
+            border: 1px dashed var(--coral);
+        }
+
+        .letter-doodles {
+            position: absolute;
+            font-size: 20px;
+            color: var(--pink);
+        }
+
+        .doodle-1 { top: 10px; right: 15px; }
+        .doodle-2 { bottom: 60px; left: 10px; }
+        .doodle-3 { bottom: 10px; right: 20px; }
+
+        .message-category {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .category-good { background: var(--light-teal); color: var(--teal); }
+        .category-sad { background: #e0e0f0; color: #7070a0; }
+        .category-nasty { background: #ffe0e0; color: var(--coral); }
+
+        .message-text {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: var(--dark);
+            line-height: 1.6;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            background: var(--teal);
+            color: #fff;
+            border: 3px solid var(--dark);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 3px 3px 0 var(--dark);
+        }
+
+        .reset-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 var(--dark);
+        }
+
+        .reset-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0 var(--dark);
+        }
+
+        /* Footer */
+        .footer-note {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .machine {
+                width: 290px;
+                padding: 12px;
+            }
+
+            .glass-globe {
+                height: 180px;
+            }
+
+            .capsule {
+                width: 28px;
+                height: 28px;
+            }
+
+            .signboard {
+                padding: 10px 15px;
+            }
+
+            .signboard-text {
+                font-size: 14px;
+            }
+
+            .crank-base {
+                width: 65px;
+                height: 65px;
+            }
+
+            .crank-handle {
+                width: 42px;
+                height: 42px;
+            }
+
+            .machine-legs {
+                width: 250px;
+            }
+
+            .secret-title {
+                font-size: 34px;
+            }
+
+            .message-text {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- SVG Filter for Sketchy Effect -->
+    <svg class="sketchy-filter">
+        <filter id="sketchy">
+            <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise" seed="1"/>
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+    </svg>
 
-  <!-- ===== FLOATING PIXEL HEARTS BACKGROUND ===== -->
-  <div class="bg-hearts" aria-hidden="true">
-    <span class="bh bh1">♥</span>
-    <span class="bh bh2">♥</span>
-    <span class="bh bh3">♥</span>
-    <span class="bh bh4">♥</span>
-    <span class="bh bh5">♥</span>
-    <span class="bh bh6">♥</span>
-  </div>
-
-  <!-- ===== MAIN APP WRAPPER ===== -->
-  <div class="app-wrapper">
-
-    <!-- ========== LEFT PANEL: CHIBI CHARACTER ========== -->
-    <div class="left-panel">
-
-      <!-- Speech Bubble -->
-      <div class="speech-bubble-wrap">
-        <div class="speech-bubble" id="speechBubble">
-          <span id="speechText">Type a message...</span>
+    <div class="gachapon-container">
+        <!-- Header -->
+        <div class="machine-header">
+            <div class="gacha-label">Gacha Message</div>
+            <div class="secret-title sketchy">Secret Message</div>
         </div>
-        <div class="speech-tail"></div>
-      </div>
 
-      <!-- Chibi Girl SVG -->
-      <div class="chibi-container" id="chibiContainer">
-        <svg class="chibi-svg" id="chibiSVG" viewBox="0 0 160 260" xmlns="[w3.org](http://www.w3.org/2000/svg)" aria-label="Chibi character">
+        <!-- Machine -->
+        <div class="machine sketchy" id="machine">
+            <!-- Glass Globe with Capsules -->
+            <div class="glass-globe" id="globe">
+                <div class="capsule pink"></div>
+                <div class="capsule teal"></div>
+                <div class="capsule coral"></div>
+                <div class="capsule pink"></div>
+                <div class="capsule gold"></div>
+                <div class="capsule teal"></div>
+                <div class="capsule pink"></div>
+                <div class="capsule coral"></div>
+                <div class="capsule teal"></div>
+                <div class="capsule pink"></div>
+                <div class="capsule gold"></div>
+                <div class="capsule teal"></div>
+                <div class="capsule pink"></div>
+                <div class="capsule coral"></div>
 
-          <!-- ── HAIR BACK ── -->
-          <rect x="28" y="42" width="104" height="70" rx="4" fill="#3b1f0e" stroke="#111" stroke-width="3"/>
-          <!-- hair sides -->
-          <rect x="20" y="58" width="20" height="60" rx="3" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-          <rect x="120" y="58" width="20" height="60" rx="3" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-          <!-- twin tails -->
-          <ellipse cx="22" cy="130" rx="14" ry="22" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-          <ellipse cx="138" cy="130" rx="14" ry="22" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-          <!-- hair ribbons -->
-          <rect x="10" y="108" width="24" height="10" rx="2" fill="#ff6eb4" stroke="#111" stroke-width="2"/>
-          <rect x="126" y="108" width="24" height="10" rx="2" fill="#ff6eb4" stroke="#111" stroke-width="2"/>
+                <!-- Signboard -->
+                <div class="signboard sketchy">
+                    <div class="signboard-text">OPEN WHEN<br>YOU'RE READY.</div>
+                    <div class="price-badge">¥200</div>
+                </div>
+            </div>
 
-          <!-- ── HEAD ── -->
-          <rect x="32" y="40" width="96" height="90" rx="18" fill="#ffe0c8" stroke="#111" stroke-width="3"/>
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="coin-slot-area">
+                    <div class="coin-slot"></div>
+                    <div class="price-label">各200円</div>
+                </div>
 
-          <!-- ── FACE FEATURES ── -->
-          <!-- Default: Happy -->
+                <div class="crank-container">
+                    <div class="crank-base sketchy">
+                        <div class="crank-handle pulse" id="crank">
+                            <span class="arrow-icon">↻</span>
+                        </div>
+                    </div>
+                </div>
 
-          <!-- Eyes group -->
-          <g id="eyesGroup">
-            <!-- Left Eye default (happy arc) -->
-            <g id="leftEye">
-              <ellipse cx="62" cy="80" rx="10" ry="11" fill="white" stroke="#111" stroke-width="2"/>
-              <ellipse cx="62" cy="82" rx="6" ry="7" fill="#4a2060"/>
-              <ellipse cx="64" cy="79" rx="2" ry="2" fill="white"/>
-              <!-- Happy arc overlay (closed smile eye) - hidden by default, shown in happy -->
-              <path id="leftEyeHappy" d="M52 80 Q62 72 72 80" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round" opacity="0"/>
-              <!-- Heart eye left -->
-              <text id="leftEyeHeart" x="54" y="87" font-size="16" fill="#ff3366" opacity="0" font-family="serif">♥</text>
-              <!-- Shocked eye left (big circle) -->
-              <ellipse id="leftEyeShocked" cx="62" cy="80" rx="11" ry="12" fill="white" stroke="#111" stroke-width="2.5" opacity="0"/>
-              <ellipse id="leftEyeShockedPupil" cx="62" cy="82" rx="5" ry="5" fill="#111" opacity="0"/>
-              <!-- Angry brow left -->
-              <rect id="leftBrowAngry" x="50" y="66" width="22" height="5" rx="2" fill="#111" transform="rotate(15,61,68)" opacity="0"/>
-              <!-- Thinking brow left -->
-              <rect id="leftBrowThink" x="50" y="66" width="22" height="4" rx="2" fill="#111" opacity="0"/>
-            </g>
-            <!-- Right Eye default -->
-            <g id="rightEye">
-              <ellipse cx="98" cy="80" rx="10" ry="11" fill="white" stroke="#111" stroke-width="2"/>
-              <ellipse cx="98" cy="82" rx="6" ry="7" fill="#4a2060"/>
-              <ellipse cx="100" cy="79" rx="2" ry="2" fill="white"/>
-              <!-- Happy arc overlay right -->
-              <path id="rightEyeHappy" d="M88 80 Q98 72 108 80" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round" opacity="0"/>
-              <!-- Heart eye right -->
-              <text id="rightEyeHeart" x="90" y="87" font-size="16" fill="#ff3366" opacity="0" font-family="serif">♥</text>
-              <!-- Shocked eye right -->
-              <ellipse id="rightEyeShocked" cx="98" cy="80" rx="11" ry="12" fill="white" stroke="#111" stroke-width="2.5" opacity="0"/>
-              <ellipse id="rightEyeShockedPupil" cx="98" cy="82" rx="5" ry="5" fill="#111" opacity="0"/>
-              <!-- Angry brow right -->
-              <rect id="rightBrowAngry" x="88" y="66" width="22" height="5" rx="2" fill="#111" transform="rotate(-15,99,68)" opacity="0"/>
-              <!-- Thinking brow right -->
-              <rect id="rightBrowThink" x="88" y="66" width="22" height="4" rx="2" fill="#111" opacity="0"/>
-            </g>
-          </g>
+                <div class="return-btn sketchy">返却</div>
+            </div>
 
-          <!-- ── NOSE ── -->
-          <ellipse cx="80" cy="96" rx="4" ry="2.5" fill="#e8a88a"/>
+            <!-- Dispenser Area -->
+            <div class="dispenser-area">
+                <div class="dispenser-slot" id="dispenser">
+                    <div class="dropped-capsule" id="droppedCapsule"></div>
+                </div>
+            </div>
+        </div>
 
-          <!-- ── MOUTH GROUP ── -->
-          <g id="mouthGroup">
-            <!-- Default happy smile -->
-            <path id="mouthHappy" d="M66 106 Q80 118 94 106" stroke="#111" stroke-width="3" fill="#ff9db5" stroke-linecap="round"/>
-            <!-- Sad mouth -->
-            <path id="mouthSad" d="M66 114 Q80 104 94 114" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round" opacity="0"/>
-            <!-- Shocked O mouth -->
-            <ellipse id="mouthShocked" cx="80" cy="110" rx="8" ry="10" fill="#cc3366" stroke="#111" stroke-width="2" opacity="0"/>
-            <!-- Angry mouth -->
-            <path id="mouthAngry" d="M66 112 Q80 106 94 112" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round" opacity="0"/>
-            <!-- Thinking flat mouth -->
-            <rect id="mouthThink" x="68" y="108" width="24" height="4" rx="2" fill="#111" opacity="0"/>
-          </g>
+        <!-- Machine Legs -->
+        <div class="machine-legs">
+            <div class="leg sketchy"></div>
+            <div class="leg sketchy"></div>
+        </div>
 
-          <!-- ── BLUSH CHEEKS ── -->
-          <ellipse id="blushLeft" cx="46" cy="100" rx="12" ry="7" fill="#ffaacc" opacity="0"/>
-          <ellipse id="blushRight" cx="114" cy="100" rx="12" ry="7" fill="#ffaacc" opacity="0"/>
-
-          <!-- ── TEARS ── -->
-          <g id="tearsGroup" opacity="0">
-            <!-- left tear -->
-            <rect x="56" y="88" width="5" height="14" rx="3" fill="#66ccff"/>
-            <ellipse cx="58" cy="103" rx="4" ry="5" fill="#66ccff"/>
-            <!-- right tear -->
-            <rect x="96" y="88" width="5" height="14" rx="3" fill="#66ccff"/>
-            <ellipse cx="98" cy="103" rx="4" ry="5" fill="#66ccff"/>
-          </g>
-
-          <!-- ── THINK BUBBLE ── -->
-          <g id="thinkBubble" opacity="0">
-            <circle cx="112" cy="55" r="3" fill="white" stroke="#111" stroke-width="1.5"/>
-            <circle cx="120" cy="46" r="5" fill="white" stroke="#111" stroke-width="1.5"/>
-            <circle cx="130" cy="36" r="8" fill="white" stroke="#111" stroke-width="2"/>
-            <text x="124" y="41" font-size="10" fill="#333" font-family="serif">?</text>
-          </g>
-
-          <!-- ── BODY ── -->
-          <!-- Neck -->
-          <rect x="70" y="128" width="20" height="16" rx="4" fill="#ffe0c8" stroke="#111" stroke-width="2"/>
-
-          <!-- Dress body -->
-          <rect x="36" y="140" width="88" height="80" rx="8" fill="#ff6eb4" stroke="#111" stroke-width="3"/>
-
-          <!-- Dress collar -->
-          <polygon points="80,140 60,158 100,158" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-
-          <!-- Dress pocket deco -->
-          <rect x="48" y="165" width="22" height="18" rx="4" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-          <text x="50" y="179" font-size="12" fill="#ff3366" font-family="serif">♥</text>
-
-          <!-- Dress bottom ruffle -->
-          <rect x="30" y="206" width="100" height="18" rx="5" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-          <!-- ruffle bumps -->
-          <ellipse cx="50" cy="206" rx="12" ry="6" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-          <ellipse cx="80" cy="206" rx="12" ry="6" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-          <ellipse cx="110" cy="206" rx="12" ry="6" fill="#ff9dd6" stroke="#111" stroke-width="2"/>
-
-          <!-- Arms -->
-          <rect x="14" y="145" width="26" height="52" rx="10" fill="#ffe0c8" stroke="#111" stroke-width="2"/>
-          <rect x="120" y="145" width="26" height="52" rx="10" fill="#ffe0c8" stroke="#111" stroke-width="2"/>
-
-          <!-- Hands -->
-          <ellipse cx="27" cy="200" rx="13" ry="11" fill="#ffe0c8" stroke="#111" stroke-width="2"/>
-          <ellipse cx="133" cy="200" rx="13" ry="11" fill="#ffe0c8" stroke="#111" stroke-width="2"/>
-
-          <!-- Legs -->
-          <rect x="56" y="218" width="20" height="36" rx="6" fill="#f0c0e8" stroke="#111" stroke-width="2"/>
-          <rect x="84" y="218" width="20" height="36" rx="6" fill="#f0c0e8" stroke="#111" stroke-width="2"/>
-
-          <!-- Shoes -->
-          <rect x="48" y="248" width="30" height="12" rx="5" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-          <rect x="82" y="248" width="30" height="12" rx="5" fill="#3b1f0e" stroke="#111" stroke-width="2"/>
-
-          <!-- ── LETTER IN HAND ── -->
-          <g id="letterInHand">
-            <rect x="104" y="182" width="30" height="22" rx="3" fill="#fffde7" stroke="#111" stroke-width="2"/>
-            <line x1="104" y1="182" x2="119" y2="193" stroke="#111" stroke-width="1.5"/>
-            <line x1="134" y1="182" x2="119" y2="193" stroke="#111" stroke-width="1.5"/>
-            <rect x="112" y="196" width="10" height="6" rx="1" fill="#ff6eb4"/>
-          </g>
-
-        </svg>
-
-        <!-- Pixel star sparkles around chibi -->
-        <span class="sparkle sp1" aria-hidden="true">✦</span>
-        <span class="sparkle sp2" aria-hidden="true">✦</span>
-        <span class="sparkle sp3" aria-hidden="true">★</span>
-      </div>
-
-      <!-- Expression label -->
-      <div class="expression-label" id="expressionLabel">✨ Happy ✨</div>
-
+        <div class="footer-note">♡ tap the machine to get your secret message ♡</div>
     </div>
-    <!-- /LEFT PANEL -->
 
-    <!-- ========== RIGHT PANEL: RETRO WINDOW ========== -->
-    <div class="right-panel">
-
-      <!-- Window chrome -->
-      <div class="retro-window" id="messageWindow">
-
-        <!-- Title bar -->
-        <div class="window-titlebar">
-          <div class="titlebar-icon">💌</div>
-          <div class="titlebar-title">Secret Message Simulator</div>
-          <div class="titlebar-btns">
-            <button class="wbtn wbtn-min" title="Minimize" aria-label="Minimize">─</button>
-            <button class="wbtn wbtn-max" title="Maximize" aria-label="Maximize">□</button>
-            <button class="wbtn wbtn-close" title="Close" aria-label="Close">✕</button>
-          </div>
+    <!-- Message Overlay -->
+    <div class="message-overlay" id="overlay">
+        <div class="opening-capsule" id="openingCapsule">
+            <div class="capsule-half capsule-top" id="capsuleTop"></div>
+            <div class="capsule-half capsule-bottom"></div>
         </div>
 
-        <!-- Window body -->
-        <div class="window-body" id="windowBody">
-
-          <!-- Corner hearts -->
-          <span class="corner-heart ch-tl" aria-hidden="true">♥</span>
-          <span class="corner-heart ch-tr" aria-hidden="true">♥</span>
-          <span class="corner-heart ch-bl" aria-hidden="true">♥</span>
-          <span class="corner-heart ch-br" aria-hidden="true">♥</span>
-
-          <!-- ── COMPOSE FORM ── -->
-          <div class="compose-form" id="composeForm">
-
-            <div class="field-group">
-              <label class="pixel-label" for="toField">TO:</label>
-              <input class="pixel-input" type="text" id="toField" placeholder="Recipient name..." maxlength="40" autocomplete="off"/>
+        <div class="letter-container" id="letter">
+            <div class="letter-decorations">
+                <div class="washi-tape"></div>
             </div>
+            <span class="letter-doodles doodle-1">✧</span>
+            <span class="letter-doodles doodle-2">♡</span>
+            <span class="letter-doodles doodle-3">★</span>
 
-            <div class="field-group">
-              <label class="pixel-label" for="fromField">FROM:</label>
-              <input class="pixel-input" type="text" id="fromField" placeholder="Your name..." maxlength="40" autocomplete="off"/>
+            <div class="message-category" id="messageCategory">GOOD</div>
+            <div class="message-text" id="messageText">
+                Loading your secret message...
             </div>
-
-            <div class="field-group">
-              <label class="pixel-label" for="messageField">MESSAGE:</label>
-              <textarea class="pixel-textarea" id="messageField" placeholder="Type your secret message here..." rows="6" maxlength="300"></textarea>
-              <div class="char-count"><span id="charCount">0</span>/300</div>
-            </div>
-
-            <!-- Mood row -->
-            <div class="mood-row">
-              <span class="pixel-label">MOOD DETECTED:</span>
-              <span class="mood-badge" id="moodBadge">😊 HAPPY</span>
-            </div>
-
-            <!-- Action buttons -->
-            <div class="btn-row">
-              <button class="pixel-btn btn-clear" id="clearBtn">🗑 CLEAR</button>
-              <button class="pixel-btn btn-seal" id="sealBtn">💌 SEAL SECRET MESSAGE</button>
-            </div>
-
-          </div>
-          <!-- /COMPOSE FORM -->
-
-          <!-- ── SEALED CARD ── -->
-          <div class="sealed-card" id="sealedCard" style="display:none;">
-
-            <!-- Envelope animation area -->
-            <div class="envelope-wrap" id="envelopeWrap">
-              <div class="envelope" id="envelope">
-                <div class="env-back"></div>
-                <div class="env-flap" id="envFlap"></div>
-                <div class="env-front-left"></div>
-                <div class="env-front-right"></div>
-                <div class="env-bottom"></div>
-                <div class="env-heart" id="envHeart">♥</div>
-              </div>
-            </div>
-
-            <!-- Summary -->
-            <div class="summary-card" id="summaryCard" style="opacity:0; transform:translateY(20px);">
-              <div class="summary-header">✦ SECRET MESSAGE SEALED ✦</div>
-              <div class="summary-row"><span class="sl">TO:</span> <span class="sv" id="sumTo"></span></div>
-              <div class="summary-row"><span class="sl">FROM:</span> <span class="sv" id="sumFrom"></span></div>
-              <div class="summary-divider">· · · · · · · · · · ·</div>
-              <div class="summary-message" id="sumMsg"></div>
-              <div class="summary-mood" id="sumMood"></div>
-              <div class="summary-divider">· · · · · · · · · · ·</div>
-              <button class="pixel-btn btn-write-another" id="writeAnotherBtn">✏ WRITE ANOTHER</button>
-            </div>
-
-          </div>
-          <!-- /SEALED CARD -->
-
+            <button class="reset-btn sketchy" id="resetBtn">✧ Insert Another Coin ✧</button>
         </div>
-        <!-- /WINDOW BODY -->
-
-      </div>
-      <!-- /RETRO WINDOW -->
-
     </div>
-    <!-- /RIGHT PANEL -->
 
-  </div>
-  <!-- /APP WRAPPER -->
+    <script>
+        // Message pools
+        const messages = {
+            good: [
+                "You are someone's reason to smile today. Yes, really. 💕",
+                "The universe conspired for billions of years just so you could exist. That's pretty special.",
+                "Someone out there thinks about you before they fall asleep. Sweet dreams are made of you.",
+                "You've survived 100% of your worst days. Your track record is impeccable.",
+                "Plot twist: You're the main character, and the good part is coming."
+            ],
+            sad: [
+                "It's okay to miss someone who wasn't good for you. Hearts don't follow logic.",
+                "Some chapters end mid-sentence. That's not your fault—stories are messy like that.",
+                "The 3am thoughts hit different, don't they? You're not alone in the quiet.",
+                "You're allowed to grieve versions of yourself that never got to exist.",
+                "Sometimes the bravest thing is just getting through another day. You're doing it."
+            ],
+            nasty: [
+                "Not to be dramatic, but I'd commit a minor felony for you. probably.",
+                "Your ex? Yeah, their loss is someone else's... also loss, probably. You're the exception.",
+                "Normalize blocking people in real life. Just walk away mid-conversation. Assert dominance.",
+                "You're not 'too much.' They were just... not enough. ✨ Facts only. ✨",
+                "Remember: you don't have to set yourself on fire to keep others warm. Let them freeze. 🧊"
+            ]
+        };
 
-  <script src="script.js"></script>
+        const capsuleColors = ['pink', 'teal', 'coral', 'gold'];
+        
+        let currentState = 'ready';
+        let audioContext = null;
+
+        // DOM Elements
+        const machine = document.getElementById('machine');
+        const crank = document.getElementById('crank');
+        const droppedCapsule = document.getElementById('droppedCapsule');
+        const overlay = document.getElementById('overlay');
+        const openingCapsule = document.getElementById('openingCapsule');
+        const capsuleTop = document.getElementById('capsuleTop');
+        const letter = document.getElementById('letter');
+        const messageCategory = document.getElementById('messageCategory');
+        const messageText = document.getElementById('messageText');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Initialize Audio Context
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Synthesize Crank Sound
+        function playCrankSound() {
+            initAudio();
+            const duration = 0.6;
+            const now = audioContext.currentTime;
+
+            // Create clicking/rattling sound
+            for (let i = 0; i < 8; i++) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+
+                osc.type = 'square';
+                osc.frequency.value = 80 + Math.random() * 60;
+                
+                filter.type = 'bandpass';
+                filter.frequency.value = 800;
+                filter.Q.value = 2;
+
+                gain.gain.setValueAtTime(0.15, now + (i * 0.07));
+                gain.gain.exponentialDecayTo = 0.01;
+                gain.gain.setTargetAtTime(0.01, now + (i * 0.07) + 0.02, 0.01);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.start(now + (i * 0.07));
+                osc.stop(now + (i * 0.07) + 0.05);
+            }
+
+            // Add a mechanical whir
+            const whir = audioContext.createOscillator();
+            const whirGain = audioContext.createGain();
+            whir.type = 'sawtooth';
+            whir.frequency.setValueAtTime(100, now);
+            whir.frequency.linearRampToValueAtTime(200, now + duration);
+            whirGain.gain.setValueAtTime(0.05, now);
+            whirGain.gain.linearRampToValueAtTime(0, now + duration);
+            whir.connect(whirGain);
+            whirGain.connect(audioContext.destination);
+            whir.start(now);
+            whir.stop(now + duration);
+        }
+
+        // Synthesize Pop Sound
+        function playPopSound() {
+            initAudio();
+            const now = audioContext.currentTime;
+
+            // Pop sound
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+            
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+
+            // Sparkle sounds
+            for (let i = 0; i < 3; i++) {
+                const sparkle = audioContext.createOscillator();
+                const sparkleGain = audioContext.createGain();
+                sparkle.type = 'sine';
+                sparkle.frequency.value = 800 + (i * 200);
+                sparkleGain.gain.setValueAtTime(0.1, now + 0.1 + (i * 0.05));
+                sparkleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2 + (i * 0.05));
+                sparkle.connect(sparkleGain);
+                sparkleGain.connect(audioContext.destination);
+                sparkle.start(now + 0.1 + (i * 0.05));
+                sparkle.stop(now + 0.25 + (i * 0.05));
+            }
+        }
+
+        // Get random item from array
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Get random message
+        function getRandomMessage() {
+            const categories = ['good', 'sad', 'nasty'];
+            const category = getRandomItem(categories);
+            const message = getRandomItem(messages[category]);
+            return { category, message };
+        }
+
+        // Dispense sequence
+        function dispense() {
+            if (currentState !== 'ready') return;
+            currentState = 'dispensing';
+
+            // Stop pulse animation and add spin
+            crank.classList.remove('pulse');
+            crank.classList.add('spinning');
+            playCrankSound();
+
+            // Set random capsule color
+            const color = getRandomItem(capsuleColors);
+            droppedCapsule.className = `dropped-capsule ${color}`;
+
+            // Drop capsule after spin
+            setTimeout(() => {
+                crank.classList.remove('spinning');
+                droppedCapsule.classList.add('dropped');
+                currentState = 'dropped';
+            }, 600);
+        }
+
+        // Open capsule sequence
+        function openCapsule() {
+            if (currentState !== 'dropped') return;
+            currentState = 'opening';
+
+            // Get capsule color
+            const colorClass = droppedCapsule.className.split(' ').find(c => capsuleColors.includes(c));
+            
+            // Set opening capsule color
+            const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--${colorClass}`).trim();
+            capsuleTop.style.background = bgColor || 'var(--pink)';
+
+            // Show overlay
+            overlay.classList.add('active');
+            
+            // Animate capsule
+            setTimeout(() => {
+                openingCapsule.classList.add('active');
+            }, 100);
+
+            // Play pop and split capsule
+            setTimeout(() => {
+                playPopSound();
+                openingCapsule.classList.add('opened');
+            }, 900);
+
+            // Show letter
+            setTimeout(() => {
+                const { category, message } = getRandomMessage();
+                
+                messageCategory.textContent = category.toUpperCase();
+                messageCategory.className = `message-category category-${category}`;
+                messageText.textContent = message;
+                
+                letter.classList.add('active');
+                currentState = 'revealed';
+            }, 1400);
+        }
+
+        // Reset to initial state
+        function reset() {
+            currentState = 'ready';
+            
+            // Hide overlay
+            letter.classList.remove('active');
+            
+            setTimeout(() => {
+                openingCapsule.classList.remove('opened');
+            }, 200);
+            
+            setTimeout(() => {
+                openingCapsule.classList.remove('active');
+            }, 400);
+            
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                droppedCapsule.classList.remove('dropped');
+                crank.classList.add('pulse');
+            }, 600);
+        }
+
+        // Event Listeners
+        machine.addEventListener('click', (e) => {
+            if (e.target.closest('.dropped-capsule') && currentState === 'dropped') {
+                openCapsule();
+            } else if (currentState === 'ready') {
+                dispense();
+            }
+        });
+
+        droppedCapsule.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentState === 'dropped') {
+                openCapsule();
+            }
+        });
+
+        resetBtn.addEventListener('click', reset);
+
+        // Touch support
+        machine.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (e.target.closest('.dropped-capsule') && currentState === 'dropped') {
+                openCapsule();
+            } else if (currentState === 'ready') {
+                dispense();
+            }
+        });
+    </script>
 </body>
 </html>
