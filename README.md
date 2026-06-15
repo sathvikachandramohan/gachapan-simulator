@@ -8,7 +8,7 @@ https://sathvikachandramohan.github.io/secret-message-simulator/
 ---
 
 ## Project Description
-The **Retro Pixel Secret Mailer** is a responsive, single-page web app built with a pure 8-bit aesthetic. Utilizing custom CSS painting architectures and embedded vector shapes, the app recreates classic computer window layouts and vintage arcade consoles entirely out of native code. It functions completely without external graphical dependencies, employing a modular frontend script to track typography flows, toggle SVG expressions, and synthesize retro waveforms on the fly.
+The **Retro Pixel Secret Mailer** is a responsive, single-page web app built with a pure 8-bit aesthetic. Utilizing custom CSS painting architectures and embedded vector shapes.
 
 ---
 
